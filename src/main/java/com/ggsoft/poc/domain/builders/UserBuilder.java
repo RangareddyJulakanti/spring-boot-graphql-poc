@@ -3,7 +3,7 @@ package com.ggsoft.poc.domain.builders;
 import com.ggsoft.poc.domain.User;
 
 /**
- * Created by Axxiome on 3/23/2017.
+ * Created by Victor Gil on 3/23/2017.
  */
 public final class UserBuilder {
     private
