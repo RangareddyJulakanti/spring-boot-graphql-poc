@@ -13,6 +13,7 @@ public class User implements Serializable {
 
     @ManyToMany(mappedBy = "members")
     private List<Group> memberships;
+
     @Id
     private String id;
     @Column

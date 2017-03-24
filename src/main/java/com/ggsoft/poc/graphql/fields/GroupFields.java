@@ -7,6 +7,8 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,8 @@ import static graphql.schema.GraphQLObjectType.newObject;
 @Component
 public class GroupFields implements GraphQlFields {
 
+    private static final Logger logger = LoggerFactory.getLogger(GroupFields.class);
+
     @Autowired
     private GroupDataFetcher groupDataFetcher;
 
@@ -48,6 +52,7 @@ public class GroupFields implements GraphQlFields {
 
     @PostConstruct
     public void init() {
+        logger.info("Initializing GroupFields");
         createTypes();
         createFields();
     }

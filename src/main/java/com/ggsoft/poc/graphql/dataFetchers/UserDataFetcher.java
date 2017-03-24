@@ -6,9 +6,12 @@ import com.ggsoft.poc.domain.builders.UserBuilder;
 import com.ggsoft.poc.repos.GroupRepository;
 import com.ggsoft.poc.repos.UserRepository;
 import com.merapar.graphql.base.TypedValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +23,8 @@ import java.util.UUID;
 @Component
 public class UserDataFetcher {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserDataFetcher.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -29,8 +34,9 @@ public class UserDataFetcher {
 
     public List<User> getUsersByFilter(TypedValueMap arguments) {
         String id = arguments.get("id");
-
+        logger.info("Getting users");
         if (id != null) {
+            logger.info("ID is {}", id);
             return Collections.singletonList(userRepository.findOne(id));
         } else {
             return userRepository.findAll();
@@ -43,6 +49,7 @@ public class UserDataFetcher {
 
     public User addUser(TypedValueMap arguments) {
         String generatedId = UUID.randomUUID().toString();
+        logger.info("Creating new user with ID {}", generatedId);
         User user = UserBuilder.anUser()
                 .withId(generatedId)
                 .withEmail(arguments.get("email"))
@@ -55,6 +62,7 @@ public class UserDataFetcher {
 
     public User updateUser(TypedValueMap arguments) {
         String id = arguments.get("id");
+        logger.info("Updating user {}", id);
         User user = userRepository.findOne(id);
         if (arguments.containsKey("email"))
             user.setEmail(arguments.get("email"));
@@ -70,7 +78,14 @@ public class UserDataFetcher {
 
     public String removeUser(TypedValueMap args) {
         String id = args.get("id");
+        logger.info("Removing user {}", id);
         userRepository.delete(id);
         return id;
+    }
+
+
+    @PostConstruct
+    public void init() {
+        logger.info("Initializing UserDataFetcher");
     }
 }
