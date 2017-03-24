@@ -1,7 +1,9 @@
 package com.ggsoft.poc.graphql.dataFetchers;
 
+import com.ggsoft.poc.domain.Group;
 import com.ggsoft.poc.domain.User;
 import com.ggsoft.poc.domain.builders.UserBuilder;
+import com.ggsoft.poc.repos.GroupRepository;
 import com.ggsoft.poc.repos.UserRepository;
 import com.merapar.graphql.base.TypedValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class UserDataFetcher {
     private UserRepository userRepository;
 
 
+    @Autowired
+    private GroupRepository groupRepository;
+
     public List<User> getUsersByFilter(TypedValueMap arguments) {
         String id = arguments.get("id");
 
@@ -30,6 +35,10 @@ public class UserDataFetcher {
         } else {
             return userRepository.findAll();
         }
+    }
+
+    public List<Group> getMemberships(User user) {
+        return groupRepository.findByMembersContaining(user);
     }
 
     public User addUser(TypedValueMap arguments) {
@@ -42,5 +51,26 @@ public class UserDataFetcher {
                 .withStreetAddress(arguments.get("streetAddress"))
                 .build();
         return userRepository.save(user);
+    }
+
+    public User updateUser(TypedValueMap arguments) {
+        String id = arguments.get("id");
+        User user = userRepository.findOne(id);
+        if (arguments.containsKey("email"))
+            user.setEmail(arguments.get("email"));
+        if (arguments.containsKey("fullName"))
+            user.setFullName(arguments.get("fullName"));
+        if (arguments.containsKey("phoneNumber"))
+            user.setPhoneNumber(arguments.get("phoneNumber"));
+        if (arguments.containsKey("streetAddress"))
+            user.setStreetAddress(arguments.get("streetAddress"));
+
+        return userRepository.save(user);
+    }
+
+    public String removeUser(TypedValueMap args) {
+        String id = args.get("id");
+        userRepository.delete(id);
+        return id;
     }
 }

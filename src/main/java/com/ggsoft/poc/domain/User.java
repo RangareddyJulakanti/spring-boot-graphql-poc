@@ -1,31 +1,36 @@
 package com.ggsoft.poc.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Victor Gil on 3/23/2017.
  */
 @Entity
+@Table(name = "users")
 public class User implements Serializable {
 
+    @ManyToMany(mappedBy = "members")
+    private List<Group> memberships;
     @Id
-    private
-    String id;
+    private String id;
     @Column
-    private
-    String email;
+    private String email;
     @Column
-    private
-    String phoneNumber;
+    private String phoneNumber;
     @Column
-    private
-    String streetAddress;
+    private String streetAddress;
     @Column
-    private
-    String fullName;
+    private String fullName;
+
+    public List<Group> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<Group> memberships) {
+        this.memberships = memberships;
+    }
 
     public String getId() {
         return id;

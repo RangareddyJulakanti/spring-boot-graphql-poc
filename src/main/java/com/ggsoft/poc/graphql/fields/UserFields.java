@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,13 +29,22 @@ public class UserFields implements GraphQlFields {
     @Autowired
     private UserDataFetcher userDataFetcher;
 
+    @Autowired
+    private GroupFields groupFields;
+
     private GraphQLObjectType userType;
     private GraphQLInputObjectType filterUserType;
 
     private GraphQLInputObjectType addUserInputType;
 
+    private GraphQLInputObjectType removeUserInputType;
+    private GraphQLInputObjectType updateUserInputType;
+
     private GraphQLFieldDefinition usersField;
     private GraphQLFieldDefinition addUserField;
+    private GraphQLFieldDefinition removeUserField;
+    private GraphQLFieldDefinition updateUserField;
+
 
     @Override
     public List<GraphQLFieldDefinition> getQueryFields() {
@@ -43,7 +53,7 @@ public class UserFields implements GraphQlFields {
 
     @Override
     public List<GraphQLFieldDefinition> getMutationFields() {
-        return Collections.singletonList(addUserField);
+        return Arrays.asList(addUserField, removeUserField, updateUserField);
     }
 
     @PostConstruct
@@ -65,6 +75,20 @@ public class UserFields implements GraphQlFields {
                 .argument(newArgument().name(INPUT).type(new GraphQLNonNull(addUserInputType)).build())
                 .dataFetcher(dataFetchingEnvironment -> userDataFetcher.addUser(getInputMap(dataFetchingEnvironment)))
                 .build();
+        updateUserField = newFieldDefinition()
+                .name("updateUser").description("Updates a user")
+                .type(userType)
+                .argument(newArgument().name(INPUT).type(new GraphQLNonNull(updateUserInputType)).build())
+                .dataFetcher(dataFetchingEnvironment -> userDataFetcher.updateUser(getInputMap(dataFetchingEnvironment)))
+                .build();
+
+
+        removeUserField = newFieldDefinition()
+                .name("removeUser").description("Removes a user")
+                .type(GraphQLString)
+                .argument(newArgument().name(INPUT).type(removeUserInputType).build())
+                .dataFetcher(dataFetchingEnvironment -> userDataFetcher.removeUser(getInputMap(dataFetchingEnvironment)))
+                .build();
     }
 
     private void createTypes() {
@@ -74,10 +98,16 @@ public class UserFields implements GraphQlFields {
                 .field(newFieldDefinition().name("phoneNumber").description("telephone number").type(GraphQLString).build())
                 .field(newFieldDefinition().name("streetAddress").description("street address").type(GraphQLString).build())
                 .field(newFieldDefinition().name("fullName").description("full name, first and last").type(GraphQLString).build())
-
+//                .field(newFieldDefinition().name("memberships").description("groups").type(new GraphQLList(groupFields.getGroupType()))
+//                        .dataFetcher(environment -> userDataFetcher.getMemberships((User) environment.getSource()))
+//                        .build())
                 .build();
         filterUserType = newInputObject().name("filterUserInput")
                 .field(newInputObjectField().name("id").type(GraphQLString).build())
+                .build();
+
+        removeUserInputType = newInputObject().name("removeUserInput")
+                .field(newInputObjectField().name("id").type(new GraphQLNonNull(GraphQLString)).build())
                 .build();
 
         addUserInputType = newInputObject().name("addUserInput")
@@ -86,6 +116,17 @@ public class UserFields implements GraphQlFields {
                 .field(newInputObjectField().name("streetAddress").type(GraphQLString).build())
                 .field(newInputObjectField().name("fullName").type(GraphQLString).build())
                 .build();
+        updateUserInputType = newInputObject().name("updateUserInput")
+                .field(newInputObjectField().name("id").description("user id").type(new GraphQLNonNull(GraphQLString)).build())
+                .field(newInputObjectField().name("email").description("email address").type(GraphQLString).build())
+                .field(newInputObjectField().name("phoneNumber").description("telephone number").type(GraphQLString).build())
+                .field(newInputObjectField().name("streetAddress").description("street address").type(GraphQLString).build())
+                .field(newInputObjectField().name("fullName").description("full name, first and last").type(GraphQLString).build())
+                .build();
 
+    }
+
+    public GraphQLObjectType getUserType() {
+        return userType;
     }
 }
