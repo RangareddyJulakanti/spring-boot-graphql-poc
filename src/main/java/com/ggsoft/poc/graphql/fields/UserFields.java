@@ -3,6 +3,8 @@ package com.ggsoft.poc.graphql.fields;
 import com.ggsoft.poc.graphql.dataFetchers.UserDataFetcher;
 import com.merapar.graphql.GraphQlFields;
 import graphql.schema.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +28,10 @@ import static graphql.schema.GraphQLObjectType.newObject;
 @Component
 public class UserFields implements GraphQlFields {
 
-    @Autowired
-    private UserDataFetcher userDataFetcher;
+    private static final Logger logger = LoggerFactory.getLogger(UserFields.class);
 
     @Autowired
-    private GroupFields groupFields;
+    private UserDataFetcher userDataFetcher;
 
     private GraphQLObjectType userType;
     private GraphQLInputObjectType filterUserType;
@@ -58,6 +59,7 @@ public class UserFields implements GraphQlFields {
 
     @PostConstruct
     public void init() {
+        logger.info("Initializing UserFields");
         createTypes();
         createFields();
     }
