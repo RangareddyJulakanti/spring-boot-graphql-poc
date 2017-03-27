@@ -1,7 +1,7 @@
 package com.ggsoft.poc.graphql.fields;
 
-import com.ggsoft.poc.domain.Group;
 import com.ggsoft.poc.graphql.dataFetchers.GroupDataFetcher;
+import com.ggsoft.poc.services.dto.GroupDTO;
 import com.merapar.graphql.GraphQlFields;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLInputObjectType;
@@ -82,7 +82,7 @@ public class GroupFields implements GraphQlFields {
                 .field(newFieldDefinition().name("id").description("group id").type(GraphQLString).build())
                 .field(newFieldDefinition().name("name").description("group name").type(GraphQLString).build())
                 .field(newFieldDefinition().name("members").description("group members").type(new GraphQLList(userFields.getUserType()))
-                        .dataFetcher(environment -> groupDataFetcher.getGroupMembers((Group) environment.getSource())).build())
+                        .dataFetcher(environment -> groupDataFetcher.getGroupMembers((GroupDTO) environment.getSource())).build())
                 .build();
         filterGroupType = newInputObject().name("filterGroupInput")
                 .field(newInputObjectField().name("id").type(GraphQLString).build())

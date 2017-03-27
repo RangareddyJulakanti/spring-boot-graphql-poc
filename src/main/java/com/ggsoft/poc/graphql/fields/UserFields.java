@@ -100,9 +100,6 @@ public class UserFields implements GraphQlFields {
                 .field(newFieldDefinition().name("phoneNumber").description("telephone number").type(GraphQLString).build())
                 .field(newFieldDefinition().name("streetAddress").description("street address").type(GraphQLString).build())
                 .field(newFieldDefinition().name("fullName").description("full name, first and last").type(GraphQLString).build())
-//                .field(newFieldDefinition().name("memberships").description("groups").type(new GraphQLList(groupFields.getGroupType()))
-//                        .dataFetcher(environment -> userDataFetcher.getMemberships((User) environment.getSource()))
-//                        .build())
                 .build();
         filterUserType = newInputObject().name("filterUserInput")
                 .field(newInputObjectField().name("id").type(GraphQLString).build())
